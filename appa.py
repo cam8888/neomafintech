@@ -31,138 +31,135 @@ def validate(uni_id, nonce, number):
 
 st.set_page_config(page_title="Beauty Contest", page_icon="🔐", layout="centered")
 
-# --- CSS CORRECTIF (LISIBILITÉ MAXIMALE) ---
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
+@font-face {
+    font-family: 'Aeonik';
+    src: url('https://cdn.jsdelivr.net/gh/GervinFung/aeonik-font@main/fonts/Aeonik-Regular.woff2') format('woff2');
+}
 :root {
-    --font: 'Inter', sans-serif;
-    --bg:      #F5F5F5; /* Gris clair pour le fond */
+    --font: 'Aeonik', 'DM Sans', sans-serif;
+    --bg:      #f2f2f2;
     --white:   #ffffff;
-    --dark-text: #1A1A1A; /* Noir profond pour la lisibilité */
-    --sub-text:  #4A4A4A;
-    --pastel-pink: #D81B60; /* Rose plus foncé pour que les labels soient lisibles */
-    --border-color: #CCCCCC;
+    --text:    #262626; /* GRIS FONCÉ POUR LA LISIBILITÉ */
+    --sub:     #4D4D4D; /* GRIS SOUTENU */
+    --border:  #ddd;
+    --blue:    #0c05f5;
+    --blue-bg: #e8e7fe;
+    --green:   #00b07a;
+    --green-bg:#d6f5eb;
+    --pastel-pink: #D87093; /* ROSE PASTEL LISIBLE */
+    --r:       14px;
 }
-
+* { box-sizing: border-box; }
 html, body, [data-testid="stAppViewContainer"] {
-    background-color: var(--bg) !important;
+    background: var(--bg) !important;
     font-family: var(--font) !important;
-    color: var(--dark-text) !important;
+    color: var(--text) !important;
 }
 
-/* On force TOUS les textes Streamlit en sombre */
-.stMarkdown, p, span, div {
-    color: var(--dark-text) !important;
-}
-
-/* Titre principal bien visible */
-h1 {
-    color: var(--dark-text) !important;
-    font-weight: 800 !important;
-}
-
-/* LABELS (NEOMA ID, Number, Nonce) en Rose Pastel Lisible */
-label[data-testid="stWidgetLabel"] p {
+/* LISIBILITÉ DES LABELS (ROSE PASTEL) */
+label[data-testid="stWidgetLabel"] > div > p {
     color: var(--pastel-pink) !important;
     font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
 }
 
-/* Champs de saisie - On ajoute des bordures pour la structure */
+/* LISIBILITÉ DU TEXTE DANS LES INPUTS */
 input {
-    color: var(--dark-text) !important;
-    background-color: white !important;
-    border: 2px solid var(--border-color) !important;
+    color: #1A1A1A !important; 
+    font-weight: 500 !important;
 }
 
-.card {
-    background: var(--white);
-    border-radius: 15px;
-    padding: 2rem;
-    border: 1px solid #E0E0E0;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-}
+.nav-brand { font-size:1.05rem; font-weight:700; color: var(--text); }
+.nav-tag { font-size:0.72rem; font-weight:500; color:var(--sub); background:var(--white); border:1px solid var(--border); padding:4px 10px; border-radius:100px; }
 
-.footer {
-    text-align: center;
-    margin-top: 3rem;
-    font-size: 0.85rem;
-    color: var(--sub-text) !important;
-    border-top: 1px solid #DDD;
-    padding-top: 1rem;
-}
+.hero h1 { font-size:2.5rem !important; font-weight:700 !important; color: var(--text) !important; margin:0 !important; }
+.hero p { font-size:0.95rem; color: var(--sub); }
 
-.footer-name {
-    color: var(--pastel-pink) !important;
-    font-weight: 700;
+.card { background:var(--white); border-radius:var(--r); border:1px solid var(--border); padding:1.6rem; margin-bottom:1rem; }
+.card-label { font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color: var(--pastel-pink); margin-bottom:1.1rem; }
+
+.stButton > button {
+    font-family:var(--font) !important; font-weight:700 !important;
+    border-radius:10px !important; width:100% !important;
 }
+.btn-commit .stButton > button { background:var(--blue) !important; color:#fff !important; }
+.btn-reveal .stButton > button { background:var(--green) !important; color:#fff !important; }
+
+.footer { text-align:center; margin-top:3rem; font-size:0.72rem; color: var(--sub); }
+.footer-name { font-weight: 700; color: var(--pastel-pink); margin-top: 4px; }
+
+/* Supprimer le blanc agressif sur le fond */
+[data-testid="stHeader"]  { background: transparent !important; }
+footer, #MainMenu { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- CONTENU ---
-st.markdown('<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;"><strong>NEOMA · Fintech</strong><span style="background:white; padding:4px 10px; border-radius:100px; font-size:0.7rem; border:1px solid #DDD;">Blockchain 2026</span></div>', unsafe_allow_html=True)
-
-st.title("Beauty Contest")
-st.markdown("<p style='font-size:1.1rem;'>Commit–Reveal scheme — pick the number closest to ⅔ of the class average.</p>", unsafe_allow_html=True)
+st.markdown("""
+<div class="nav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.8rem;">
+    <div class="nav-brand">NEOMA · Fintech</div>
+    <div class="nav-tag">Blockchain 2026</div>
+</div>
+<div class="hero" style="margin-bottom:2.4rem;">
+    <h1>Beauty Contest</h1>
+    <p>Commit–Reveal scheme — pick the number closest to ⅔ of the class average.</p>
+</div>
+""", unsafe_allow_html=True)
 
 now = now_utc()
 commit_open = now <= COMMIT_DEADLINE_UTC
 reveal_open = now >= REVEAL_OPEN_UTC
 
-# Chips de statut
-c1, c2 = st.columns(2)
-with c1:
-    st.markdown(f"<div style='background:{'#D1FAE5' if commit_open else '#FEE2E2'}; color:{'#065F46' if commit_open else '#991B1B'}; padding:8px; border-radius:10px; text-align:center; font-weight:700;'>● Commit: {'Open' if commit_open else 'Closed'}</div>", unsafe_allow_html=True)
-with c2:
-    st.markdown(f"<div style='background:{'#D1FAE5' if reveal_open else '#FEE2E2'}; color:{'#065F46' if reveal_open else '#991B1B'}; padding:8px; border-radius:10px; text-align:center; font-weight:700;'>● Reveal: {'Open' if reveal_open else 'Closed'}</div>", unsafe_allow_html=True)
+st.markdown(f"""
+<div class="chips" style="display:flex; gap:8px; margin-bottom:2rem;">
+    <span style="background:{'#d6f5eb' if commit_open else '#fde8e8'}; color:{'#00b07a' if commit_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
+        {'● Commit open' if commit_open else '○ Commit closed'}
+    </span>
+    <span style="background:{'#d6f5eb' if reveal_open else '#fde8e8'}; color:{'#00b07a' if reveal_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
+        {'● Reveal open' if reveal_open else '○ Reveal closed'}
+    </span>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-# --- CARD DETAILS ---
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown("<h4 style='margin-top:0; color:#4A4A4A;'>YOUR DETAILS</h4>", unsafe_allow_html=True)
+st.markdown('<div class="card"><div class="card-label">Your details</div>', unsafe_allow_html=True)
 uni_id = st.text_input("NEOMA ID", placeholder="e.g. S033...")
 number = st.number_input("Number (0 – 100)", min_value=0, max_value=100, value=50)
-nonce  = st.text_input("Secret nonce", placeholder="Your secret key", type="password")
+nonce  = st.text_input("Secret nonce", placeholder="e.g. MySecret42", type="password")
 
 if uni_id.strip() and nonce.strip():
     preimage = f"{uni_id.strip()}|{int(number)}|{nonce.strip()}"
     commit_hash = sha256(preimage)
-    st.info(f"**SHA-256 Hash:** {commit_hash}")
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="margin-top:1rem; background:#f9f9f9; border:1px solid #ddd; border-radius:10px; padding:0.9rem;">
+        <div style="font-size:0.65rem; font-weight:700; color:var(--pastel-pink); text-transform:uppercase;">SHA-256 hash</div>
+        <div style="font-family:monospace; font-size:0.75rem; color:#262626; word-break:break-all;">{commit_hash}</div>
+    </div>""", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
-# --- CARD ACTIONS ---
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown("<h4 style='margin-top:0; color:#4A4A4A;'>PHASE 1 — COMMIT</h4>", unsafe_allow_html=True)
-if st.button("Lock in my commit →", use_container_width=True):
+st.markdown('<div class="card"><div class="card-label">Phase 1 — Commit</div>', unsafe_allow_html=True)
+st.markdown('<div class="btn-commit">', unsafe_allow_html=True)
+if st.button("Lock in my commit →", key="btn_commit"):
     err = validate(uni_id, nonce, number)
-    if not commit_open: st.error("Window closed.")
+    if not commit_open: st.error("Closed")
     elif err: st.error(err)
     else:
-        h = sha256(f"{uni_id.strip()}|{int(number)}|{nonce.strip()}")
-        status, text = post({"kind": "commit", "uni_id": uni_id.strip(), "commit": h})
-        if status == 200: st.success("✅ Success!")
-        else: st.error(f"Error: {text}")
+        status, text = post({"kind": "commit", "uni_id": uni_id.strip(), "commit": sha256(f"{uni_id.strip()}|{int(number)}|{nonce.strip()}")})
+        st.write(f"Status: {status}")
+st.markdown("</div></div>", unsafe_allow_html=True)
 
-st.markdown("<hr style='margin:1.5rem 0; opacity:0.1;'>", unsafe_allow_html=True)
-
-st.markdown("<h4 style='margin-top:0; color:#4A4A4A;'>PHASE 2 — REVEAL</h4>", unsafe_allow_html=True)
-if st.button("Reveal my number →", use_container_width=True):
+st.markdown('<div class="card"><div class="card-label">Phase 2 — Reveal</div>', unsafe_allow_html=True)
+st.markdown('<div class="btn-reveal">', unsafe_allow_html=True)
+if st.button("Reveal my number →", key="btn_reveal"):
     err = validate(uni_id, nonce, number)
-    if not reveal_open: st.error("Not open yet.")
+    if not reveal_open: st.error("Not open yet")
     elif err: st.error(err)
     else:
         status, text = post({"kind": "reveal", "uni_id": uni_id.strip(), "number": int(number), "nonce": nonce.strip()})
-        if status == 200: st.success("✅ Accepted!")
-        else: st.error(f"Error: {text}")
-st.markdown('</div>', unsafe_allow_html=True)
+        st.write(f"Status: {status}")
+st.markdown("</div></div>", unsafe_allow_html=True)
 
-# --- FOOTER ---
 st.markdown(f"""
 <div class="footer">
     NEOMA Business School · Blockchain & Fintech · 2026<br>
