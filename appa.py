@@ -31,145 +31,136 @@ def validate(uni_id, nonce, number):
 
 st.set_page_config(page_title="Beauty Contest", page_icon="🔐", layout="centered")
 
+# --- CSS CORRECTIF (LISIBILITÉ MAXIMALE) ---
 st.markdown("""
 <style>
-@font-face {
-    font-family: 'Aeonik';
-    src: url('https://cdn.jsdelivr.net/gh/GervinFung/aeonik-font@main/fonts/Aeonik-Regular.woff2') format('woff2');
-    font-weight: 400;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 :root {
-    --font: 'Aeonik', sans-serif;
-    --bg:      #f2f2f2;
+    --font: 'Inter', sans-serif;
+    --bg:      #F5F5F5; /* Gris clair pour le fond */
     --white:   #ffffff;
-    --text:    #0a0a0a;
-    --sub:     #555;
-    --border:  #ddd;
-    --blue:    #0c05f5;
-    --blue-bg: #e8e7fe;
-    --green:   #00b07a;
-    --green-bg:#d6f5eb;
-    --red:     #e02020;
-    --red-bg:  #fde8e8;
-    --pastel-pink: #D87093; /* Un rose pastel un peu soutenu pour la lisibilité */
-    --r:       14px;
+    --dark-text: #1A1A1A; /* Noir profond pour la lisibilité */
+    --sub-text:  #4A4A4A;
+    --pastel-pink: #D81B60; /* Rose plus foncé pour que les labels soient lisibles */
+    --border-color: #CCCCCC;
 }
-* { box-sizing: border-box; }
+
 html, body, [data-testid="stAppViewContainer"] {
-    background: var(--bg) !important;
+    background-color: var(--bg) !important;
     font-family: var(--font) !important;
-}
-[data-testid="stHeader"]  { background: transparent !important; }
-[data-testid="stSidebar"] { display: none !important; }
-footer, #MainMenu { display: none !important; }
-
-.block-container {
-    max-width: 500px !important;
-    padding: 2.5rem 1.2rem 6rem !important;
-    margin: 0 auto !important;
+    color: var(--dark-text) !important;
 }
 
-/* STYLE DES LABELS (NEOMA ID, NUMBER, NONCE) */
-label[data-testid="stWidgetLabel"] > div > p {
-    font-family: var(--font) !important; 
-    font-size: 0.85rem !important; 
+/* On force TOUS les textes Streamlit en sombre */
+.stMarkdown, p, span, div {
+    color: var(--dark-text) !important;
+}
+
+/* Titre principal bien visible */
+h1 {
+    color: var(--dark-text) !important;
     font-weight: 800 !important;
-    color: var(--pastel-pink) !important; /* Couleur Rose Pastel */
-    text-transform: uppercase !important; 
-    letter-spacing: 0.08em !important;
 }
 
-.nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:2.8rem; }
-.nav-brand { font-size:1.05rem; font-weight:700; letter-spacing:-0.03em; }
-.nav-tag { font-size:0.72rem; font-weight:500; color:var(--sub); background:var(--white); border:1px solid var(--border); padding:4px 10px; border-radius:100px; }
-
-.card { background:var(--white); border-radius:var(--r); border:1px solid var(--border); padding:1.6rem 1.6rem 1.4rem; margin-bottom:1rem; }
-.card-label { font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--sub); margin-bottom:1.1rem; }
-
-input[type="text"], input[type="number"], input[type="password"] {
-    background:var(--white) !important; border:2px solid #FFC0CB !important; border-radius:10px !important;
+/* LABELS (NEOMA ID, Number, Nonce) en Rose Pastel Lisible */
+label[data-testid="stWidgetLabel"] p {
+    color: var(--pastel-pink) !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.stButton > button {
-    font-family:var(--font) !important; font-weight:700 !important;
-    border-radius:10px !important; padding:0.68rem 1.2rem !important; width:100% !important;
+/* Champs de saisie - On ajoute des bordures pour la structure */
+input {
+    color: var(--dark-text) !important;
+    background-color: white !important;
+    border: 2px solid var(--border-color) !important;
 }
-.btn-commit .stButton > button { background:var(--blue) !important; color:#fff !important; }
-.btn-reveal .stButton > button { background:var(--green) !important; color:#fff !important; }
 
-.footer { text-align:center; margin-top:3rem; font-size:0.8rem; color:#888; letter-spacing:0.02em; font-weight: 500; }
-.footer-name { color: var(--pastel-pink); font-weight: 700; margin-top: 5px; }
+.card {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 1px solid #E0E0E0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 0.85rem;
+    color: var(--sub-text) !important;
+    border-top: 1px solid #DDD;
+    padding-top: 1rem;
+}
+
+.footer-name {
+    color: var(--pastel-pink) !important;
+    font-weight: 700;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# --- UI HEADER ---
-st.markdown("""
-<div class="nav">
-    <div class="nav-brand">NEOMA · Fintech</div>
-    <div class="nav-tag">Blockchain 2026</div>
-</div>
-<div class="hero" style="margin-bottom:2.4rem;">
-    <h1 style="font-size:2rem; font-weight:700; letter-spacing:-0.04em; margin-bottom:0.5rem;">Beauty Contest</h1>
-    <p style="font-size:0.9rem; color:#555;">Commit–Reveal scheme — pick the number closest to ⅔ of the class average.</p>
-</div>
-""", unsafe_allow_html=True)
+# --- CONTENU ---
+st.markdown('<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;"><strong>NEOMA · Fintech</strong><span style="background:white; padding:4px 10px; border-radius:100px; font-size:0.7rem; border:1px solid #DDD;">Blockchain 2026</span></div>', unsafe_allow_html=True)
+
+st.title("Beauty Contest")
+st.markdown("<p style='font-size:1.1rem;'>Commit–Reveal scheme — pick the number closest to ⅔ of the class average.</p>", unsafe_allow_html=True)
 
 now = now_utc()
 commit_open = now <= COMMIT_DEADLINE_UTC
 reveal_open = now >= REVEAL_OPEN_UTC
 
-st.markdown(f"""
-<div class="chips" style="display:flex; gap:8px; margin-bottom:2rem;">
-    <span class="chip" style="background:{'#d6f5eb' if commit_open else '#fde8e8'}; color:{'#00b07a' if commit_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
-        {'● Commit open' if commit_open else '○ Commit closed'}
-    </span>
-    <span class="chip" style="background:{'#d6f5eb' if reveal_open else '#fde8e8'}; color:{'#00b07a' if reveal_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
-        {'● Reveal open' if reveal_open else '○ Reveal closed'}
-    </span>
-</div>
-""", unsafe_allow_html=True)
+# Chips de statut
+c1, c2 = st.columns(2)
+with c1:
+    st.markdown(f"<div style='background:{'#D1FAE5' if commit_open else '#FEE2E2'}; color:{'#065F46' if commit_open else '#991B1B'}; padding:8px; border-radius:10px; text-align:center; font-weight:700;'>● Commit: {'Open' if commit_open else 'Closed'}</div>", unsafe_allow_html=True)
+with c2:
+    st.markdown(f"<div style='background:{'#D1FAE5' if reveal_open else '#FEE2E2'}; color:{'#065F46' if reveal_open else '#991B1B'}; padding:8px; border-radius:10px; text-align:center; font-weight:700;'>● Reveal: {'Open' if reveal_open else 'Closed'}</div>", unsafe_allow_html=True)
 
-# --- FORMULAIRE ---
-st.markdown('<div class="card"><div class="card-label">Your details</div>', unsafe_allow_html=True)
-uni_id = st.text_input("NEOMA ID", placeholder="e.g. S033001234567X")
-number = st.number_input("Number (0 – 100)", min_value=0, max_value=100, value=50, step=1)
-nonce  = st.text_input("Secret nonce", placeholder="e.g. MySecret42", type="password")
+st.markdown("<br>", unsafe_allow_html=True)
+
+# --- CARD DETAILS ---
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown("<h4 style='margin-top:0; color:#4A4A4A;'>YOUR DETAILS</h4>", unsafe_allow_html=True)
+uni_id = st.text_input("NEOMA ID", placeholder="e.g. S033...")
+number = st.number_input("Number (0 – 100)", min_value=0, max_value=100, value=50)
+nonce  = st.text_input("Secret nonce", placeholder="Your secret key", type="password")
 
 if uni_id.strip() and nonce.strip():
     preimage = f"{uni_id.strip()}|{int(number)}|{nonce.strip()}"
     commit_hash = sha256(preimage)
-    st.markdown(f"""
-    <div style="margin-top:1rem; background:#f8f9fa; border:1.5px solid #FFC0CB; border-radius:10px; padding:0.9rem 1rem;">
-        <div style="font-size:0.62rem; font-weight:700; text-transform:uppercase; color:#D87093;">SHA-256 hash</div>
-        <div style="font-family:monospace; font-size:0.68rem; color:#333; word-break:break-all;">{commit_hash}</div>
-    </div>""", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
+    st.info(f"**SHA-256 Hash:** {commit_hash}")
+st.markdown('</div>', unsafe_allow_html=True)
 
-# --- ACTIONS ---
-st.markdown('<div class="card"><div class="card-label">Phase 1 — Commit</div>', unsafe_allow_html=True)
-st.markdown('<div class="btn-commit">', unsafe_allow_html=True)
-if st.button("Lock in my commit →", key="btn_commit"):
+# --- CARD ACTIONS ---
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown("<h4 style='margin-top:0; color:#4A4A4A;'>PHASE 1 — COMMIT</h4>", unsafe_allow_html=True)
+if st.button("Lock in my commit →", use_container_width=True):
     err = validate(uni_id, nonce, number)
-    if not commit_open: st.error("⛔ The commit window is closed.")
-    elif err: st.error(f"❌ {err}")
+    if not commit_open: st.error("Window closed.")
+    elif err: st.error(err)
     else:
         h = sha256(f"{uni_id.strip()}|{int(number)}|{nonce.strip()}")
         status, text = post({"kind": "commit", "uni_id": uni_id.strip(), "commit": h})
-        if status == 200: st.success("✅ Commit sent!")
-        else: st.error(f"❌ Error: {text}")
-st.markdown("</div></div>", unsafe_allow_html=True)
+        if status == 200: st.success("✅ Success!")
+        else: st.error(f"Error: {text}")
 
-st.markdown('<div class="card"><div class="card-label">Phase 2 — Reveal</div>', unsafe_allow_html=True)
-st.markdown('<div class="btn-reveal">', unsafe_allow_html=True)
-if st.button("Reveal my number →", key="btn_reveal"):
+st.markdown("<hr style='margin:1.5rem 0; opacity:0.1;'>", unsafe_allow_html=True)
+
+st.markdown("<h4 style='margin-top:0; color:#4A4A4A;'>PHASE 2 — REVEAL</h4>", unsafe_allow_html=True)
+if st.button("Reveal my number →", use_container_width=True):
     err = validate(uni_id, nonce, number)
-    if not reveal_open: st.error("⛔ The reveal window is not open yet.")
-    elif err: st.error(f"❌ {err}")
+    if not reveal_open: st.error("Not open yet.")
+    elif err: st.error(err)
     else:
         status, text = post({"kind": "reveal", "uni_id": uni_id.strip(), "number": int(number), "nonce": nonce.strip()})
-        if status == 200: st.success("✅ Reveal accepted!")
-        else: st.error(f"❌ Error: {text}")
-st.markdown("</div></div>", unsafe_allow_html=True)
+        if status == 200: st.success("✅ Accepted!")
+        else: st.error(f"Error: {text}")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # --- FOOTER ---
 st.markdown(f"""
