@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 from datetime import datetime, timezone
 
-# --- CONFIG & LOGIC ---
+# --- CONFIG ---
 API_URL = "https://script.google.com/macros/s/AKfycbyNZNOE1DYNbd4GbGTISJsGrnJ4PYCuip0yjSw3Lr8KkD6-kadKI9mfpKNfiAHEWb0Osw/exec"
 COMMIT_DEADLINE_UTC = datetime(2026, 11, 30, 22, 59, 59, tzinfo=timezone.utc)
 REVEAL_OPEN_UTC     = datetime(2024, 10, 21, 22,  0,  0, tzinfo=timezone.utc)
@@ -17,131 +17,104 @@ def post(payload):
         return r.status_code, r.text
     except Exception as e: return None, str(e)
 
-st.set_page_config(page_title="NEOMA | Beauty Contest", page_icon="⚖️", layout="centered")
+st.set_page_config(page_title="Beauty Contest", layout="centered")
 
-# --- CLEAN LUXE UI ---
+# --- UNIFIED CSS (ONE COLOR, ONE FONT) ---
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* Reset & Base */
-html, body, [data-testid="stAppViewContainer"] {
-    background-color: #F8F9FA !important;
+:root {
+    --main-color: #262626; /* Gris anthracite unique pour tout */
+    --accent-pink: #FFB6C1; /* Rose pastel uniquement pour la signature */
+}
+
+/* Application de la couleur unique partout */
+html, body, [data-testid="stAppViewContainer"], .stMarkdown, p, span, label {
+    color: var(--main-color) !important;
     font-family: 'Inter', sans-serif !important;
-    color: #2D3436 !important;
 }
 
-.block-container { padding-top: 2rem !important; max-width: 550px !important; }
+/* Uniformisation des titres */
+h1, h2, h3, h4 {
+    color: var(--main-color) !important;
+    font-weight: 700 !important;
+}
 
-/* Typography */
-h1 { font-weight: 700 !important; letter-spacing: -1px; color: #2D3436 !important; margin-bottom: 0.2rem !important; }
-p { color: #636E72 !important; font-size: 0.95rem; }
-
-/* Pink Labels (Readable & Aesthetic) */
+/* Harmonisation des Labels de saisie */
 label[data-testid="stWidgetLabel"] p {
-    color: #D87093 !important;
+    color: var(--main-color) !important;
+    font-size: 0.9rem !important;
     font-weight: 600 !important;
-    text-transform: uppercase;
-    font-size: 0.75rem !important;
-    letter-spacing: 0.05rem;
-    margin-bottom: 8px;
+    text-transform: none !important;
 }
 
-/* Elegant Cards */
-.stCard {
-    background: #FFFFFF;
-    border: 1px solid #EDF2F7;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+/* Style des champs de saisie */
+input {
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
 }
 
-/* Buttons */
-.stButton > button {
-    border-radius: 12px !important;
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    transition: all 0.2s ease;
+/* Footer & Signature */
+.footer-container {
+    text-align: center;
+    margin-top: 4rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
 }
-.btn-commit button { background-color: #2D3436 !important; color: white !important; }
-.btn-reveal button { background-color: #D87093 !important; color: white !important; }
-
-/* Status Chips */
-.status-bar { display: flex; gap: 10px; margin-bottom: 2rem; }
-.chip { padding: 4px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-
-/* Footer */
-.footer { border-top: 1px solid #EEE; margin-top: 4rem; padding-top: 2rem; text-align: center; font-size: 0.8rem; color: #B2BEC3; }
-.camelia { color: #D87093; font-weight: 700; margin-top: 5px; font-size: 0.9rem; }
+.camelia-signature {
+    color: var(--accent-pink) !important;
+    font-weight: 700;
+    font-size: 1rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER ---
-st.markdown("<h1>Beauty Contest</h1>", unsafe_allow_html=True)
-st.markdown("<p>Blockchain-based Commit-Reveal protocol for game theory simulation.</p>", unsafe_allow_html=True)
+# --- UI CONTENT ---
+st.title("Beauty Contest")
+st.write("Commit–Reveal protocol for game theory simulation.")
 
-# --- STATUS ---
+# Status simple
 now = now_utc()
 c_open = now <= COMMIT_DEADLINE_UTC
 r_open = now >= REVEAL_OPEN_UTC
 
 st.markdown(f"""
-<div class="status-bar">
-    <span class="chip" style="background:{'#E3F9E5' if c_open else '#FFE3E3'}; color:{'#1F7A33' if c_open else '#A91515'};">
-        ● Commit: {'Open' if c_open else 'Closed'}
-    </span>
-    <span class="chip" style="background:{'#E3F9E5' if r_open else '#FFE3E3'}; color:{'#1F7A33' if r_open else '#A91515'};">
-        ● Reveal: {'Open' if r_open else 'Closed'}
-    </span>
+<div style="margin-bottom: 2rem; font-size: 0.85rem; font-weight: 600;">
+    <span style="margin-right: 15px;">{'●' if c_open else '○'} Commit Phase: {'Active' if c_open else 'Closed'}</span>
+    <span>{'●' if r_open else '○'} Reveal Phase: {'Active' if r_open else 'Waiting'}</span>
 </div>
 """, unsafe_allow_html=True)
 
-# --- INPUT SECTION ---
-with st.container():
-    st.markdown('<div class="stCard">', unsafe_allow_html=True)
-    uni_id = st.text_input("NEOMA Student ID", placeholder="S000...")
-    val_number = st.number_input("Chosen Value (0-100)", min_value=0, max_value=100, value=50)
-    nonce = st.text_input("Security Nonce (Private)", type="password", placeholder="Secret code...")
-    
-    if uni_id and nonce:
+# Formulaire simple (sans card)
+uni_id = st.text_input("NEOMA ID", placeholder="S033...")
+val_number = st.number_input("Chosen Number", min_value=0, max_value=100, value=50)
+nonce = st.text_input("Secret Nonce", type="password")
+
+if uni_id and nonce:
+    h = sha256(f"{uni_id.strip()}|{int(val_number)}|{nonce.strip()}")
+    st.code(f"SHA-256 Identifier: {h}")
+
+st.markdown("---")
+
+# Actions
+if st.button("Lock in Commit", use_container_width=True):
+    if not c_open: st.error("Commit window closed.")
+    else:
         h = sha256(f"{uni_id.strip()}|{int(val_number)}|{nonce.strip()}")
-        st.markdown(f"""
-        <div style="background:#F8F9FA; padding:12px; border-radius:8px; border-left:4px solid #D87093; margin-top:15px;">
-            <span style="font-size:0.65rem; font-weight:700; color:#D87093; display:block;">SHA-256 IDENTIFIER</span>
-            <code style="font-size:0.75rem; color:#2D3436; word-break:break-all;">{h}</code>
-        </div>
-        """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        s, t = post({"kind": "commit", "uni_id": uni_id.strip(), "commit": h})
+        st.write(f"Server Status: {s}")
 
-# --- ACTIONS ---
-col_a, col_b = st.columns(2)
+if st.button("Submit Reveal", use_container_width=True):
+    if not r_open: st.error("Reveal window not open yet.")
+    else:
+        s, t = post({"kind": "reveal", "uni_id": uni_id.strip(), "number": int(val_number), "nonce": nonce.strip()})
+        st.write(f"Server Status: {s}")
 
-with col_a:
-    st.markdown('<div class="btn-commit">', unsafe_allow_html=True)
-    if st.button("Submit Commit", use_container_width=True):
-        if not c_open: st.error("Commit phase closed.")
-        elif not uni_id: st.warning("Enter ID.")
-        else:
-            h = sha256(f"{uni_id.strip()}|{int(val_number)}|{nonce.strip()}")
-            res, txt = post({"kind": "commit", "uni_id": uni_id.strip(), "commit": h})
-            st.toast(f"Result: {res}")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col_b:
-    st.markdown('<div class="btn-reveal">', unsafe_allow_html=True)
-    if st.button("Submit Reveal", use_container_width=True):
-        if not r_open: st.error("Reveal phase not yet open.")
-        else:
-            res, txt = post({"kind": "reveal", "uni_id": uni_id.strip(), "number": int(val_number), "nonce": nonce.strip()})
-            st.toast(f"Result: {res}")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- FOOTER ---
+# FOOTER AVEC TON NOM
 st.markdown(f"""
-<div class="footer">
-    NEOMA BUSINESS SCHOOL &nbsp;•&nbsp; FINTECH MODULE &nbsp;•&nbsp; 2026<br>
-    <div class="camelia">Project by Camélia El Rhabi</div>
+<div class="footer-container">
+    NEOMA Business School • Blockchain & Fintech<br>
+    <div style="margin-top:8px;">Project by <span class="camelia-signature">Camélia El Rhabi</span></div>
 </div>
 """, unsafe_allow_html=True)
