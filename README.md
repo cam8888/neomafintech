@@ -1,29 +1,22 @@
-# 🛡️ NEOMA Blockchain Lab - Beauty Contest dApp
-### *Projet par Camélia El Rhabi*
+# Project by Camélia El Rhabi
 
-![Version](https://img.shields.io/badge/Version-1.0.0-rose)
-![Python](https://img.shields.io/badge/Python-3.13-F7E7CE)
-![Framework](https://img.shields.io/badge/Framework-Streamlit-FFB6C1)
+## Project Presentation
+This portal is a decentralized application (dApp) designed to participate in the famous **Keynesian Beauty Contest** via a **Commit-Reveal** protocol on the blockchain. 
+The objective is to choose a number between 0 and 100 that is closest to **2/3 of the average** of all numbers chosen by the class.
 
-## 📋 Présentation du Projet
-Ce portail est une application décentralisée (dApp) permettant de participer au célèbre **Concours de Beauté de Keynes** (Keynesian Beauty Contest) via un protocole de **Commit-Reveal** sur la blockchain.
+## System Architecture
+To guarantee the integrity and confidentiality of the votes, the system uses a two-phase cryptographic mechanism:
 
-L'objectif est de choisir un nombre entre 0 et 100 qui se rapproche le plus des **2/3 de la moyenne de tous les nombres choisis** par la classe.
+* **Commit Phase**: The user generates a proof of their choice by hashing their `ID|Number|Secret` with the **SHA-256** algorithm. Only the hash is sent to the ledger, keeping the choice secret.
+* **Reveal Phase**: Once the deadline has passed, the user reveals their number and secret. The system verifies that the hash matches the initial commitment before counting the vote.
 
-## 🏗️ Architecture du Système
-Pour garantir l'intégrité et la confidentialité des votes, le système utilise un mécanisme cryptographique en deux phases :
+## Tech Stack
+* **Frontend**: Streamlit (Custom Pastel Pink & Beige design)
+* **Backend**: Google Apps Script API (Shared Ledger)
+* **Cryptography**: SHA-256 (`hashlib` library)
+* **Typography**: Aeonik Pro (Lexend Deca)
 
-1. **Phase de Commit** : L'utilisateur génère une preuve de son choix en hachant son `ID|Nombre|Secret` avec l'algorithme **SHA-256**. Seul le hash est envoyé au registre (ledger), gardant le choix secret.
-2. **Phase de Reveal** : Une fois la deadline passée, l'utilisateur révèle son nombre et son secret. Le système vérifie que le hash correspond à l'engagement initial avant de comptabiliser le vote.
-
-## 💻 Tech Stack
-* **Frontend** : Streamlit (Design personnalisé Rose Pastel & Beige)
-* **Backend** : Google Apps Script API (Shared Ledger)
-* **Cryptographie** : SHA-256 (Bibliothèque `hashlib`)
-* **Police d'écriture** : Aeonik Pro (Lexend Deca)
-
-## 🚀 Installation et Lancement
-
-1. Clonez le répertoire :
-   ```bash
-   git clone [https://github.com/votre-username/neoma-blockchain-portal.git](https://github.com/votre-username/neoma-blockchain-portal.git)
+## Installation and Launch
+Clone the repository:
+```bash
+git clone [https://github.com/your-username/neoma-blockchain-portal.git](https://github.com/your-username/neoma-blockchain-portal.git)
