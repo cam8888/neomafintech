@@ -36,50 +36,61 @@ st.markdown("""
 @font-face {
     font-family: 'Aeonik';
     src: url('https://cdn.jsdelivr.net/gh/GervinFung/aeonik-font@main/fonts/Aeonik-Regular.woff2') format('woff2');
+    font-weight: 400;
 }
 :root {
     --font: 'Aeonik', 'DM Sans', sans-serif;
     --bg:      #f2f2f2;
     --white:   #ffffff;
-    --text:    #262626; /* GRIS FONCÉ POUR LA LISIBILITÉ */
-    --sub:     #4D4D4D; /* GRIS SOUTENU */
+    --text:    #333333; /* GRIS FONCÉ */
+    --sub:     #555;
     --border:  #ddd;
     --blue:    #0c05f5;
     --blue-bg: #e8e7fe;
     --green:   #00b07a;
     --green-bg:#d6f5eb;
-    --pastel-pink: #D87093; /* ROSE PASTEL LISIBLE */
+    --red:     #e02020;
+    --red-bg:  #fde8e8;
+    --pink:    #D87093; /* ROSE PASTEL LISIBLE */
     --r:       14px;
 }
 * { box-sizing: border-box; }
 html, body, [data-testid="stAppViewContainer"] {
     background: var(--bg) !important;
     font-family: var(--font) !important;
-    color: var(--text) !important;
+    color: var(--text) !important; /* TEXTE EN GRIS FONCÉ */
 }
+[data-testid="stHeader"]  { background: transparent !important; }
+[data-testid="stSidebar"] { display: none !important; }
+footer, #MainMenu { display: none !important; }
 
-/* LISIBILITÉ DES LABELS (ROSE PASTEL) */
+/* MODIFICATION DES COULEURS DES LABELS */
 label[data-testid="stWidgetLabel"] > div > p {
-    color: var(--pastel-pink) !important;
+    color: var(--pink) !important; /* ROSE PASTEL */
     font-weight: 700 !important;
     font-size: 0.8rem !important;
     text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
 }
 
-/* LISIBILITÉ DU TEXTE DANS LES INPUTS */
+/* MODIFICATION DU TEXTE DES INPUTS */
 input {
-    color: #1A1A1A !important; 
-    font-weight: 500 !important;
+    color: #333333 !important; /* GRIS FONCÉ */
 }
 
+.block-container {
+    max-width: 500px !important;
+    padding: 2.5rem 1.2rem 6rem !important;
+    margin: 0 auto !important;
+}
+.nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:2.8rem; }
 .nav-brand { font-size:1.05rem; font-weight:700; color: var(--text); }
 .nav-tag { font-size:0.72rem; font-weight:500; color:var(--sub); background:var(--white); border:1px solid var(--border); padding:4px 10px; border-radius:100px; }
-
-.hero h1 { font-size:2.5rem !important; font-weight:700 !important; color: var(--text) !important; margin:0 !important; }
-.hero p { font-size:0.95rem; color: var(--sub); }
-
-.card { background:var(--white); border-radius:var(--r); border:1px solid var(--border); padding:1.6rem; margin-bottom:1rem; }
-.card-label { font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color: var(--pastel-pink); margin-bottom:1.1rem; }
+.hero { margin-bottom:2.4rem; }
+.hero h1 { font-size:2rem !important; font-weight:700 !important; color:var(--text) !important; }
+.hero p { font-size:0.9rem; color:var(--sub); line-height:1.6; }
+.card { background:var(--white); border-radius:var(--r); border:1px solid var(--border); padding:1.6rem 1.6rem 1.4rem; margin-bottom:1rem; }
+.card-label { font-size:0.65rem; font-weight:700; color:var(--sub); margin-bottom:1.1rem; }
 
 .stButton > button {
     font-family:var(--font) !important; font-weight:700 !important;
@@ -88,21 +99,25 @@ input {
 .btn-commit .stButton > button { background:var(--blue) !important; color:#fff !important; }
 .btn-reveal .stButton > button { background:var(--green) !important; color:#fff !important; }
 
-.footer { text-align:center; margin-top:3rem; font-size:0.72rem; color: var(--sub); }
-.footer-name { font-weight: 700; color: var(--pastel-pink); margin-top: 4px; }
-
-/* Supprimer le blanc agressif sur le fond */
-[data-testid="stHeader"]  { background: transparent !important; }
-footer, #MainMenu { display: none !important; }
+.footer-camelia {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 0.8rem;
+    color: var(--sub);
+}
+.pink-name {
+    color: var(--pink);
+    font-weight: 700;
+}
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<div class="nav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.8rem;">
+<div class="nav">
     <div class="nav-brand">NEOMA · Fintech</div>
     <div class="nav-tag">Blockchain 2026</div>
 </div>
-<div class="hero" style="margin-bottom:2.4rem;">
+<div class="hero">
     <h1>Beauty Contest</h1>
     <p>Commit–Reveal scheme — pick the number closest to ⅔ of the class average.</p>
 </div>
@@ -114,28 +129,23 @@ reveal_open = now >= REVEAL_OPEN_UTC
 
 st.markdown(f"""
 <div class="chips" style="display:flex; gap:8px; margin-bottom:2rem;">
-    <span style="background:{'#d6f5eb' if commit_open else '#fde8e8'}; color:{'#00b07a' if commit_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
+    <span class="chip" style="background:{'#d6f5eb' if commit_open else '#fde8e8'}; color:{'#00b07a' if commit_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
         {'● Commit open' if commit_open else '○ Commit closed'}
     </span>
-    <span style="background:{'#d6f5eb' if reveal_open else '#fde8e8'}; color:{'#00b07a' if reveal_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
+    <span class="chip" style="background:{'#d6f5eb' if reveal_open else '#fde8e8'}; color:{'#00b07a' if reveal_open else '#e02020'}; padding:6px 13px; border-radius:100px; font-size:0.75rem; font-weight:600;">
         {'● Reveal open' if reveal_open else '○ Reveal closed'}
     </span>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="card"><div class="card-label">Your details</div>', unsafe_allow_html=True)
-uni_id = st.text_input("NEOMA ID", placeholder="e.g. S033...")
-number = st.number_input("Number (0 – 100)", min_value=0, max_value=100, value=50)
+uni_id = st.text_input("NEOMA ID", placeholder="e.g. S033001234567X")
+number = st.number_input("Number (0 – 100)", min_value=0, max_value=100, value=50, step=1)
 nonce  = st.text_input("Secret nonce", placeholder="e.g. MySecret42", type="password")
 
 if uni_id.strip() and nonce.strip():
     preimage = f"{uni_id.strip()}|{int(number)}|{nonce.strip()}"
-    commit_hash = sha256(preimage)
-    st.markdown(f"""
-    <div style="margin-top:1rem; background:#f9f9f9; border:1px solid #ddd; border-radius:10px; padding:0.9rem;">
-        <div style="font-size:0.65rem; font-weight:700; color:var(--pastel-pink); text-transform:uppercase;">SHA-256 hash</div>
-        <div style="font-family:monospace; font-size:0.75rem; color:#262626; word-break:break-all;">{commit_hash}</div>
-    </div>""", unsafe_allow_html=True)
+    st.info(f"Hash: {sha256(preimage)}")
 st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown('<div class="card"><div class="card-label">Phase 1 — Commit</div>', unsafe_allow_html=True)
@@ -160,9 +170,10 @@ if st.button("Reveal my number →", key="btn_reveal"):
         st.write(f"Status: {status}")
 st.markdown("</div></div>", unsafe_allow_html=True)
 
-st.markdown(f"""
-<div class="footer">
+# SIGNATURE FINALE
+st.markdown("""
+<div class="footer-camelia">
     NEOMA Business School · Blockchain & Fintech · 2026<br>
-    <div class="footer-name">Project by Camélia El Rhabi</div>
+    Projet par <span class="pink-name">Camélia El Rhabi</span>
 </div>
 """, unsafe_allow_html=True)
