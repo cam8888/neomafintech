@@ -1,67 +1,27 @@
-import hashlib
-import requests
-import streamlit as st
-from datetime import datetime, timezone
-
-# ⚠️ TOUJOURS en premier
-st.set_page_config(page_title="Beauty Contest", page_icon="🔐", layout="centered")
-
-# ENSUITE le CSS
-st.markdown("""
-<style>
-/* ton CSS ici */
-</style>
-""", unsafe_allow_html=True)
-
-# ENSUITE ton app
-st.title("Beauty Contest")
 st.markdown("""
 <style>
 
-/* ---------- FONTS ---------- */
-@font-face {
-    font-family: 'Aeonik';
-    src: url('https://cdn.jsdelivr.net/gh/GervinFung/aeonik-font@main/fonts/Aeonik-Regular.woff2') format('woff2');
-    font-weight: 400;
-}
-@font-face {
-    font-family: 'Aeonik';
-    src: url('https://cdn.jsdelivr.net/gh/GervinFung/aeonik-font@main/fonts/Aeonik-Medium.woff2') format('woff2');
-    font-weight: 500;
-}
-@font-face {
-    font-family: 'Aeonik';
-    src: url('https://cdn.jsdelivr.net/gh/GervinFung/aeonik-font@main/fonts/Aeonik-Bold.woff2') format('woff2');
-    font-weight: 700;
-}
-
-/* ---------- COLORS (PASTEL ROSE THEME) ---------- */
+/* ---------- GLOBAL ---------- */
 :root {
     --font: 'Aeonik', 'DM Sans', sans-serif;
 
-    --bg:      #faf7fb;
-    --white:   #ffffff;
-    --text:    #1a1a1a;
-    --sub:     #6b6b6b;
-    --border:  #e7dff0;
+    --bg: #f8f6fb;
+    --white: #ffffff;
+    --text: #111111;
+    --sub: #6b6b6b;
+    --border: #e5def0;
 
-    --primary: #e8b4f0;
-    --primary-dark: #d48ce6;
+    --primary: #d946ef;        /* rose élégant */
+    --primary-soft: #f3e8ff;
 
-    --accent:  #f9d5ec;
-    --accent-strong: #ec9ed6;
+    --green: #00b07a;
+    --green-bg: #e6faf3;
 
-    --green:   #00b07a;
-    --green-bg:#d6f5eb;
+    --red: #e02020;
+    --red-bg: #fdecec;
 
-    --red:     #e02020;
-    --red-bg:  #fde8e8;
-
-    --r: 16px;
+    --r: 14px;
 }
-
-/* ---------- GLOBAL ---------- */
-* { box-sizing: border-box; }
 
 html, body, [data-testid="stAppViewContainer"] {
     background: var(--bg) !important;
@@ -69,33 +29,27 @@ html, body, [data-testid="stAppViewContainer"] {
     color: var(--text) !important;
 }
 
-[data-testid="stHeader"]  { background: transparent !important; }
+[data-testid="stHeader"] { background: transparent !important; }
 [data-testid="stSidebar"] { display: none !important; }
 footer, #MainMenu { display: none !important; }
 
+/* ---------- LAYOUT ---------- */
 .block-container {
-    max-width: 500px !important;
-    padding: 2.5rem 1.2rem 6rem !important;
+    max-width: 520px !important;
+    padding: 2.5rem 1.4rem 5rem !important;
     margin: 0 auto !important;
 }
 
 /* ---------- NAV ---------- */
-.nav {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:2.8rem;
-}
+.nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem; }
 
 .nav-brand {
-    font-size:1.05rem;
+    font-size:1.1rem;
     font-weight:700;
-    letter-spacing:-0.03em;
 }
 
 .nav-tag {
     font-size:0.72rem;
-    font-weight:500;
     color:var(--sub);
     background:var(--white);
     border:1px solid var(--border);
@@ -105,42 +59,28 @@ footer, #MainMenu { display: none !important; }
 
 /* ---------- HERO ---------- */
 .hero h1 {
-    font-size:2rem !important;
+    font-size:2.2rem !important;
     font-weight:700 !important;
-    letter-spacing:-0.04em !important;
-    line-height:1.15 !important;
-    margin:0 0 0.5rem !important;
+    margin-bottom:0.4rem !important;
 }
 
 .hero p {
-    font-size:0.9rem;
+    font-size:0.92rem;
     color:var(--sub);
 }
 
-/* ---------- CHIPS ---------- */
-.chips { display:flex; gap:8px; margin-bottom:2rem; flex-wrap:wrap; }
+/* ---------- STATUS ---------- */
+.chips { display:flex; gap:10px; margin-bottom:2rem; }
 
 .chip {
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
     font-size:0.75rem;
     font-weight:600;
-    padding:6px 13px;
+    padding:6px 12px;
     border-radius:100px;
 }
 
-.chip-dot {
-    width:7px;
-    height:7px;
-    border-radius:50%;
-}
-
 .chip.on  { background:var(--green-bg); color:var(--green); }
-.chip.on  .chip-dot { background:var(--green); }
-
 .chip.off { background:var(--red-bg); color:var(--red); }
-.chip.off .chip-dot { background:var(--red); }
 
 /* ---------- CARDS ---------- */
 .card {
@@ -150,106 +90,84 @@ footer, #MainMenu { display: none !important; }
     padding: 1.6rem;
     margin-bottom: 1rem;
 
-    box-shadow: 0 8px 25px rgba(232, 180, 240, 0.15);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
 .card-label {
-    font-size:0.65rem;
+    font-size:0.7rem;
     font-weight:700;
-    letter-spacing:0.1em;
+    letter-spacing:0.08em;
     text-transform:uppercase;
     color:var(--sub);
-    margin-bottom:1.1rem;
+    margin-bottom:1rem;
 }
 
-/* ---------- INPUTS ---------- */
-label[data-testid="stWidgetLabel"] > div > p {
-    font-family:var(--font) !important;
-    font-size:0.72rem !important;
-    font-weight:700 !important;
-    color:var(--sub) !important;
-    text-transform:uppercase !important;
-    letter-spacing:0.08em !important;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="password"] {
+/* ---------- INPUTS (FIX VISIBILITY) ---------- */
+input {
     background: #ffffff !important;
-    border: 1.8px solid var(--border) !important;
-    border-radius: 12px !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: 10px !important;
 
-    padding: 10px 12px !important;
+    padding: 10px !important;
 
-    font-family: var(--font) !important;
     font-size: 0.95rem !important;
     font-weight: 600 !important;
-    color: var(--text) !important;
+    color: #111 !important;
 }
 
 input::placeholder {
-    color: #b8a8c2 !important;
-    font-weight: 500;
+    color: #9b8bb0 !important;
 }
 
 input:focus {
-    border-color: var(--primary-dark) !important;
-    box-shadow: 0 0 0 3px rgba(232, 180, 240, 0.25) !important;
-    background: #fff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.15) !important;
 }
 
-/* ---------- HASH BOX ---------- */
+/* ---------- HASH ---------- */
 .hash-box {
-    margin-top: 1rem;
-    background: #fff0fb;
-    border: 1.5px solid #f3c6ec;
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
+    margin-top:1rem;
+    background:#faf5ff;
+    border:1px solid #e9d5ff;
+    border-radius:10px;
+    padding:0.9rem 1rem;
 }
 
 .hash-box-title {
-    font-size:0.62rem;
+    font-size:0.65rem;
     font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:0.1em;
-    color:#d48ce6;
-    margin-bottom:5px;
+    color:var(--primary);
 }
 
 .hash-mono {
-    font-family:'Courier New',monospace;
-    font-size:0.68rem;
-    color:#b14fc5;
-    word-break:break-all;
+    font-family:monospace;
+    font-size:0.7rem;
+    color:#7e22ce;
 }
 
 /* ---------- BUTTONS ---------- */
 .stButton > button {
-    font-family:var(--font) !important;
     font-weight:700 !important;
-    font-size:0.92rem !important;
-    border:none !important;
-    border-radius:12px !important;
-    padding:0.7rem 1.2rem !important;
-    width:100% !important;
+    border-radius:10px !important;
+    padding:0.7rem !important;
 }
 
 .btn-commit .stButton > button {
-    background: linear-gradient(135deg, #e8b4f0, #f3c6ec) !important;
-    color:#fff !important;
+    background: linear-gradient(135deg, #d946ef, #c026d3) !important;
+    color:white !important;
 }
 
 .btn-reveal .stButton > button {
-    background: linear-gradient(135deg, #ec9ed6, #f7b6e6) !important;
-    color:#fff !important;
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+    color:white !important;
 }
 
 /* ---------- FOOTER ---------- */
 .footer {
     text-align:center;
     margin-top:3rem;
-    font-size:0.72rem;
-    color:#bbb;
+    font-size:0.75rem;
+    color:#aaa;
 }
 
 </style>
