@@ -1,4 +1,7 @@
-st.markdown("""
+import hashlib
+import requests
+import streamlit as st
+from datetime import datetime, timezonest.markdown("""
 <style>
 
 /* ---------- GLOBAL ---------- */
