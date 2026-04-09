@@ -1,7 +1,20 @@
 import hashlib
 import requests
-import streamlit as st   # ✅ IMPORTANT
+import streamlit as st
 from datetime import datetime, timezone
+
+# ⚠️ TOUJOURS en premier
+st.set_page_config(page_title="Beauty Contest", page_icon="🔐", layout="centered")
+
+# ENSUITE le CSS
+st.markdown("""
+<style>
+/* ton CSS ici */
+</style>
+""", unsafe_allow_html=True)
+
+# ENSUITE ton app
+st.title("Beauty Contest")
 st.markdown("""
 <style>
 
